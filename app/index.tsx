@@ -4,102 +4,41 @@ import {
   Text,
   TextInput,
   FlatList,
-  Image,
   TouchableOpacity,
   Modal,
   ScrollView,
 } from 'react-native';
 import { Stack } from 'expo-router';
-import { MaterialIcons, Fontisto, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Datos simulados de personas con materias
-const DATOS = [
-  {
-    id: '1',
-    nombre: 'Mario Alfredo',
-    materia: 'Administración de Redes',
-    universidad: 'UTN',
-    carrera: 'ITI',
-    pais: 'Costa Rica',
-    modalidad: 'Virtual',
-    horario: 'Martes y Jueves en la mañana',
-    imagen: 'https://randomuser.me/api/portraits/men/1.jpg',
-  },
-  {
-    id: '2',
-    nombre: 'Hermenegildo Paladino',
-    materia: 'Cálculo y Álgebra Lineal',
-    universidad: 'UTN',
-    carrera: 'ITI',
-    pais: 'Costa Rica',
-    modalidad: 'Presencial',
-    horario: 'Viernes en la mañana',
-    imagen: 'https://randomuser.me/api/portraits/men/2.jpg',
-  },
-  {
-    id: '3',
-    nombre: 'Keven Antonio Solis',
-    materia: 'Programación I',
-    pais: 'Colombia',
-    universidad: 'UTN',
-    carrera: 'ITI',
-    modalidad: 'Presencial',
-    horario: 'Viernes en la tarde',
-    imagen: 'https://randomuser.me/api/portraits/men/3.jpg',
-  },
-  {
-    id: '4',
-    nombre: 'Mario Alfredo',
-    materia: 'Administacrión de Servidores',
-    pais: 'Colombia',
-    universidad: 'UPTC',
-    carrera: 'ITI',
-    modalidad: 'Presencial',
-    horario: 'Martes y Jueves 9am - 10am',
-    imagen: 'https://randomuser.me/api/portraits/men/4.jpg',
-  },
-  {
-    id: '6',
-    nombre: 'Messi Ronaldo Diaz',
-    materia: 'Programación II',
-    pais: 'Colombia',
-    universidad: 'UPTC',
-    carrera: 'ITI',
-    modalidad: 'Presencial',
-    horario: 'Viernes 11am - 12pm',
-    imagen: 'https://randomuser.me/api/portraits/men/6.jpg',
-  },
-  {
-    id: '7',
-    nombre: 'Enrique Adonai',
-    materia: 'Administaración de Redes',
-    pais: 'Colombia',
-    universidad: 'UPTC',
-    carrera: 'ITI',
-    modalidad: 'Híbrida',
-    horario: 'Lunes 5am - 1pm',
-    imagen: 'https://randomuser.me/api/portraits/men/7.jpg',
-  },
-];
+import { MaterialIcons, Fontisto, FontAwesome, FontAwesome5, Feather} from '@expo/vector-icons';
+import CardProfesor from '~/components/CardProfesor';
+import useProfesor from '~/components/useProfesor';
 
 export default function Inicio() {
-  const [busqueda, setBusqueda] = useState(''); // Estado para el texto de búsqueda
   const [mostrarModalFiltro, setMostrarModalFiltro] = useState(false); // Controla si el modal de filtros está habilitado
-  const [paisSeleccionado, setPaisSeleccionado] = useState(''); // Guarda el país seleccionado
   const [mostrarPaises, setMostrarPaises] = useState(false); // Controla si se despliega la lista de países
-  const [universidadSeleccionado, setUniversidadSeleccionado] = useState(''); // Guarda la universidad seleccionado
   const [mostrarUniversidad, setMostrarUniversidad] = useState(false); // Controla si se despliega la lista de universidad
-  const [carreraSeleccionado, setcarreraSeleccionado] = useState(''); // Guarda la carrera seleccionado
   const [mostrarcarrera, setMostrarcarrera] = useState(false); // Controla si se despliega la lista de carrera
-  const [materiaSeleccionada, setMateriaSeleccionada] = useState(''); // Guarda la materia seleccionado
   const [mostrarMateria, setMostrarMateria] = useState(false); // Controla si se despliega la lista de materia
-
-  const [fechaSeleccionada, setFechaSeleccionada] = useState(''); // Guarda la fecha seleccionado
   const [mostrarFecha, setMostrarFecha] = useState(false); // Controla si se despliega la lista de fecha
-
-  const [modalidadSeleccionada, setModalidadSeleccionada] = useState(''); // Guarda la modalidad seleccionado
   const [mostrarModalidad, setMostrarModalidad] = useState(false); // Controla si se despliega la lista de modalidad
+  const {
+    datosFiltrados,
+    busqueda,
+    setBusqueda,
+    paisSeleccionado,
+    setPaisSeleccionado,
+    universidadSeleccionado,
+    setUniversidadSeleccionado,
+    carreraSeleccionado,
+    setcarreraSeleccionado,
+    materiaSeleccionada,
+    setMateriaSeleccionada,
+    fechaSeleccionada,
+    setFechaSeleccionada,
+    modalidadSeleccionada,
+    setModalidadSeleccionada,
+    reiniciarFiltros
+  } = useProfesor();
 
   // Función para seleccionar o deseleccionar un país
   const seleccionPais = (pais) => {
@@ -144,55 +83,59 @@ export default function Inicio() {
       setModalidadSeleccionada(mod);
     }
   };
-  // Filtrar la lista
-  const datosFiltrados = DATOS.filter(
-    (item) =>
-      // Búsqueda por la caja de texto
-      (busqueda
-        ? item.materia.toLowerCase().includes(busqueda.toLowerCase()) ||
-          item.pais.toLowerCase().includes(busqueda.toLowerCase()) ||
-          item.universidad.toLowerCase().includes(busqueda.toLowerCase()) ||
-          item.carrera.toLowerCase().includes(busqueda.toLowerCase()) ||
-          item.horario.toLowerCase().includes(busqueda.toLowerCase()) ||
-          item.modalidad.toLowerCase().includes(busqueda.toLowerCase())
-        : true) &&
-      // Aplicar filtros
-      (paisSeleccionado ? item.pais === paisSeleccionado : true) &&
-      (universidadSeleccionado ? item.universidad === universidadSeleccionado : true) &&
-      (carreraSeleccionado ? item.carrera === carreraSeleccionado : true) &&
-      (materiaSeleccionada
-        ? item.materia.toLowerCase().includes(materiaSeleccionada.toLowerCase())
-        : true) &&
-      (fechaSeleccionada
-        ? item.horario.toLowerCase().includes(fechaSeleccionada.toLowerCase())
-        : true) &&
-      (modalidadSeleccionada ? item.modalidad === modalidadSeleccionada : true)
-  );
 
   return (
     <View className="flex-1 bg-[#082F49] p-4">
       <Stack.Screen options={{ title: 'Buscador' }} />
 
       {/* Campo de búsqueda con icono de filtro */}
-      <View className="mb-4 flex-row items-center rounded-full bg-white px-4 py-2">
-        <TextInput
-          className="flex-1 text-black"
-          placeholder="Buscar materia..."
-          placeholderTextColor="#888"
-          value={busqueda}
-          onChangeText={setBusqueda}
-        />
-        {/* Botón de filtro */}
-        <TouchableOpacity onPress={() => setMostrarModalFiltro(true)}>
-          <MaterialIcons name="filter-alt" size={24} color="blue" />
-        </TouchableOpacity>
-      </View>
+      <View className="mb-4 flex-col  rounded-full bg-white px-4 py-2">
+        <View className='flex-row items-center'>
+          <TextInput
+            className="flex-1 text-black"
+            placeholder="Buscar materia..."
+            placeholderTextColor="#888"
+            value={busqueda}
+            onChangeText={setBusqueda}
+          />
+          {/* Botón de filtro */}
+          <TouchableOpacity onPress={() => setMostrarModalFiltro(true)}>
+            <MaterialIcons name="filter-alt" size={24} color="#082F49" />
+          </TouchableOpacity>
+        </View>
+        
+        </View>
+        <View className='justify-center items-center text-center'>
+            {/*  Filtros aplicados  */}
+            {(paisSeleccionado || universidadSeleccionado|| carreraSeleccionado || materiaSeleccionada || fechaSeleccionada || modalidadSeleccionada) && (
+              <View className="flex-row items-center  justify-between mt-2 mb-10 bg-gray-200 rounded-full px-4 py-2 max-w-80 text-center">
+                <Text className="text-gray-700 text-sm text-center ">
+                  {paisSeleccionado && `${paisSeleccionado} | `}
+                  {universidadSeleccionado && `${universidadSeleccionado} | `}
+                  {carreraSeleccionado && `${carreraSeleccionado} | `}
+                  {materiaSeleccionada && `${materiaSeleccionada} | `}
+                  {fechaSeleccionada && `${fechaSeleccionada} | `}
+                  {modalidadSeleccionada && `${modalidadSeleccionada}`}
+                </Text>
+                <View className='justify-center items-end text-center'>
+                  <TouchableOpacity onPress={() => reiniciarFiltros()}>
+                    <Feather name="x" size={22} color="gray" />
+                  </TouchableOpacity>
+                </View>
+
+              </View>
+
+
+            )}
+          </View>
+
+
 
       {/* Lista de tarjetas filtradas */}
       <FlatList
         data={datosFiltrados}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <TarjetaPersona datos={item} />}
+        renderItem={({ item }) => <CardProfesor datos={item} />}
       />
 
       {/* Modal de Filtros */}
@@ -412,29 +355,3 @@ export default function Inicio() {
     </View>
   );
 }
-
-// Componente de Tarjeta para mostrar información de cada persona
-const TarjetaPersona = ({ datos }) => (
-  <View className="mb-4 rounded-lg bg-[#38BDF8] p-4">
-    <View className="flex-row items-center">
-      {/* Imagen de la persona */}
-      <Image source={{ uri: datos.imagen }} className="mr-4 h-20 w-20 rounded-full" />
-      <View className="flex-1">
-        {/* Datos personales */}
-        <Text className="text-lg font-bold text-white">{datos.materia}</Text>
-        <Text className="text-white">{datos.nombre}</Text>
-        <Text className="text-white">
-          {datos.universidad} · {datos.carrera}
-        </Text>
-        <Text className="text-white">
-          {datos.pais} · {datos.modalidad}
-        </Text>
-        <Text className="text-white">{datos.horario}</Text>
-      </View>
-    </View>
-    {/* Botón de Agendar Cita */}
-    <TouchableOpacity className="mt-3 rounded-lg bg-[#0C4A6E] py-2">
-      <Text className="text-center text-white">Agendar Cita</Text>
-    </TouchableOpacity>
-  </View>
-);
